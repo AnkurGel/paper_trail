@@ -219,12 +219,6 @@ module PaperTrail
       ::PaperTrail::Reifier.reify(self, options)
     end
 
-    # Restore the item from this version with the updated attributes from changeset
-    def reify_from_changeset(options = {})
-      return nil if object.nil?
-      ::PaperTrail::Reifier.reify_from_changeset(self, options)
-    end
-
     # Returns what changed in this version of the item.
     # `ActiveModel::Dirty#changes`. returns `nil` if your `versions` table does
     # not have an `object_changes` text column.

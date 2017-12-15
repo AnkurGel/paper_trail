@@ -17,18 +17,10 @@ module PaperTrail
       def reify(version, options)
         options = apply_defaults_to(options, version)
         attrs = version.object_deserialized
-        model = init_model(attrs, options, version)
-        reify_attributes(model, version, attrs)
-        model.send "#{model.class.version_association_name}=", version
-        reify_associations(model, options, version)
-        model
-      end
-
-      def reify_from_changeset(version, options)
-        options = apply_defaults_to(options, version)
-        attrs = version.object_deserialized
-        cs = (version.changeset || {}).to_h.each_with_object({}) { |(k, v), h| h[k] = v.last }
-        attrs.merge!(cs)
+        if options[:from_changeset]
+          cs = (version.changeset || {}).to_h.each_with_object({}) { |(k, v), h| h[k] = v.last }
+          attrs.merge!(cs)
+        end
         model = init_model(attrs, options, version)
         reify_attributes(model, version, attrs)
         model.send "#{model.class.version_association_name}=", version
