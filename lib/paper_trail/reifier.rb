@@ -24,6 +24,18 @@ module PaperTrail
         model
       end
 
+      def reify_from_changeset(version, options)
+        options = apply_defaults_to(options, version)
+        attrs = version.object_deserialized
+        cs = (version.changeset || {}).to_h.each_with_object({}) { |(k, v), h| h[k] = v.last }
+        attrs.merge!(cs)
+        model = init_model(attrs, options, version)
+        reify_attributes(model, version, attrs)
+        model.send "#{model.class.version_association_name}=", version
+        reify_associations(model, options, version)
+        model
+      end
+
       # Restore the `model`'s has_many associations as they were at version_at
       # timestamp We lookup the first child versions after version_at timestamp or
       # in same transaction.
